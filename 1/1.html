@@ -8,8 +8,7 @@
 </head>
 <body>
     <div id="app">
-        {{ arr }}
-        {{ teacher }}
+        
     </div>
     <script>
         //控制元素方法二(延迟控制)
@@ -18,26 +17,10 @@
             //控制元素方法一
             el:'#app',
             data:{
-                arr:[1,2,3,4,5,6],
-                teacher:{
-                    name: '张三',
-                    age: 18,
-                    height: '180cm'
-                }
+
             }
         });
-        //用于数组的方法，才能响应式显示，并且vue提供了两个新方法
-        vm.arr.push(999);
-        vm.arr.shift(0);
-        vm.arr.reverse();
-        vm.arr.pop();
-        vm.arr.sort()
-        vm.$set(vm.arr,5,66)
-        vm.$delete(vm.arr,2)
 
-        //对象只能用vue提供的这两个方法
-        vm.$set(vm.teacher,'son','张xx');
-        vm.$delete(vm.teacher,'age');
     </script>
 </body>
 </html>
