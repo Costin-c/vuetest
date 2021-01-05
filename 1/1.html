@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <!-- 注意语法规范 插值表达式要有空格，尤其是插值对象{} -->
+    <!-- <div id="app">{{ '大碗大碗的' }} {{ 21336411 }}</div> -->
+    <div id="app">
+        {{ msg }}
+        {{ teacher.height }}
+        {{ teacher.age }}
+    </div>
+    <script>
+        //控制元素方法二(延迟控制)
+        // vm.$mount('#app');
+        const vm = new Vue({
+            //控制元素方法一
+            el:'#app',
+            data:{
+                msg:'asdasfdadasdas',
+                teacher:{
+                    name: 'costin',
+                    age: 18,
+                    weigth: '70kg'
+                }
+            }
+        });
+        vm.msg = '萨芬就啊快是flak是';
+        console.log(vm.$el,vm.$el.innerText);
+
+
+
+        
+    </script>
+</body>
+</html>
