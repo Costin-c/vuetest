@@ -8,7 +8,8 @@
 </head>
 <body>
     <div id="app">
-        
+        <div v-once>{{ msg }}</div>
+        <div>{{ msg }}</div>
     </div>
     <script>
         //控制元素方法二(延迟控制)
@@ -17,10 +18,10 @@
             //控制元素方法一
             el:'#app',
             data:{
-
+                msg: '显示一次'
             }
         });
-
+        vm.msg = 'xxx'
     </script>
 </body>
 </html>
