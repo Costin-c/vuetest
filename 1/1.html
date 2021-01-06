@@ -7,9 +7,26 @@
     <script src="./vue.js"></script>
 </head>
 <body>
+    <!-- 条件渲染 -->
     <div id="app">
-        <div v-once>{{ msg }}</div>
-        <div>{{ msg }}</div>
+        <!-- 三个指令 -->
+        <div v-if="msg === 'A'">asdasds</div>
+        <div v-else-if="msg === 'B'">asdasdasd</div>
+        <div v-else>asdasdsadsadsada</div>
+
+
+        <template v-if="type">
+            <div>
+                阿三打撒萨芬萨芬
+            </div>
+        </template>
+        
+
+        <div v-show="show">
+            <div>unjnun</div>
+            <div>unjnun</div>
+            <div>unjnun</div>
+        </div>
     </div>
     <script>
         //控制元素方法二(延迟控制)
@@ -18,10 +35,11 @@
             //控制元素方法一
             el:'#app',
             data:{
-                msg: '显示一次'
+                msg: 'C',
+                type: '',
+                show: "2"
             }
         });
-        vm.msg = 'xxx'
     </script>
 </body>
 </html>
