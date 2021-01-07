@@ -7,13 +7,11 @@
     <script src="./vue.js"></script>
 </head>
 <body>
-    <!-- v-bind -->
+    <!-- v-on监听dom事件 -->
     <div id="app">
-        <div :style="[classA,classB]">sadsds</div>
-        <div :style="{color: 'green',height: '30px',backgroundColor: 'yellow'}">asdsad</div>
-        
-        <div :class="{red:isRed}"></div>
-        <div :class="[{red:isRed},green,red]"></div>
+        <!-- <button v-on:click='msg++'>点击</button> -->
+        <button @click='count(2,$event)'>点击</button>
+        <p>点击了{{ msg }}次</p>
     </div>
     <script>
         //控制元素方法二(延迟控制)
@@ -22,17 +20,18 @@
             //控制元素方法一
             el:'#app',
             data:{
-                isRed: true,
-                red: 'reddd',
-                green: 'classGreen',
-                classA:{
-                    color: 'yellow',
-                    width: '50px'
+                msg: 0
+            },
+            methods: {
+                count(num,e){
+                    this.msg+=num;
+                    console.log(e.target);
+                    this.a()
                 },
-                classB: {
-                    cursor: 'pointer'
+                a(){
+                    console.log('aaaa');
                 }
-            }
+            },
         });
     </script>
 </body>
