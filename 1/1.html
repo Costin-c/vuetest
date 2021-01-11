@@ -5,37 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="./vue.js"></script>
-    <link rel="stylesheet" href="./index.css" />
+    <link rel="stylesheet" href="./index.css">
   </head>
   <body>
     <!-- 淘宝练习 -->
     <div id="app">
-      <div class="goods" v-for="(goods, goodsIndex) in goodsList" :key="goods.id">
-        <div class="title">{{ goods.title }}:</div>
-        <ul class="type-list">
-          <li
-            class="type"
-            v-for="(type,typeIndex) in goods.typeList"
-            :key="type"
-            :class="{active: typeIndex === goods.index}"
-            @click="addClick(typeIndex, goods,type, goodsIndex)"
-          >
-            {{ type }}
-          </li>
-        </ul>
-      </div>
-
-      <div class="choose-type">
-        <div>已选条件：</div>
-        <span class="no-goods" v-if="!showGoods">暂时没有选择过滤条件</span>
-        <ul class="filter-list" v-else>
-          <li
-            v-for="(filterGoods, goodsKey) in filterList"
-          >{{ filterGoods }}
-            <span class="delete-goods" @click="deleteFilterGoods(goodsKey)">x</span>
-        </li>
-        </ul>
-      </div>
+        <div class="header">
+            <div class="container">
+                <div class="logo">toDoList</div>
+                <div class="input-area">
+                    <input type="text" @input="handleInput" :value="curMask">
+                    <button @click="addMask(curMask)">添加</button>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <h2>
+                <span>正在进行</span>
+                <span class="mask-num">{{ needDoList.length }}</span>
+            </h2>
+            <ul class="mask-list">
+                <li v-for="(mask, needIndex) in needDoList" :key="mask.id">
+                    <div>
+                        <input type="checkbox" @change="doCheck(needIndex, 'need')">
+                        <span>{{ mask.title }}</span>
+                    </div>
+                    <button @click="deleteMask(needIndex, 'need')">删除</button>
+                </li>
+            </ul>
+        </div>
+        <div class="container">
+            <h2>
+                <span>正在进行</span>
+                <span class="mask-num">{{ completeList.length }}</span>
+            </h2>
+            <ul class="mask-list complete-list">
+                <li v-for="(mask, completeIndex) in completeList" :key="mask.id">
+                    <div>
+                        <input type="checkbox" @change="doCheck(completeIndex, 'complete')">
+                        <span>{{ mask.title }}</span>
+                    </div>
+                    <button @click="deleteMask(completeIndex, 'complete')">删除</button>
+                </li>
+            </ul>
+        </div>
     </div>
     
 
@@ -46,74 +59,38 @@
         //控制元素方法一
         el: "#app",
         data: {
-            filterList: {},
-            showGoods: false,
-            goodsList: [
-            {
-              title: "上装",
-              typeList: [
-                "全部",
-                "针织衫",
-                "毛呢外套",
-                "T恤",
-                "羽绒服",
-                "棉衣",
-                "卫衣",
-                "风衣",
-              ],
-              id: 1,
-            },
-            {
-              title: "裤装",
-              typeList: [
-                "全部",
-                "牛仔裤",
-                "小脚/铅笔裤",
-                "休闲裤",
-                "打底裤",
-                "哈伦裤",
-              ],
-              id: 2,
-            },
-            {
-              title: "裙装",
-              typeList: [
-                "全部",
-                "连衣裙",
-                "半身裙",
-                "长袖连衣裙",
-                "中长款连衣裙",
-              ],
-              id: 3,
-            },
-          ],
+            curMask: '',
+            needDoList: [],
+            completeList: []
         },
         methods: {
-          addClick(typeIndex, goods, type,goodsIndex) {
-            if(type === '全部'){
-                return;
+            handleInput(e){
+                this.curMask = e.target.value;
+            },
+            addMask(){
+                if(this.curMask == ''){return;}
+                this.needDoList.push({
+                    title: this.curMask,
+                    id: Math.random()
+                })
+                this.curMask = '';
+            },
+            doCheck(index,type){
+                if(type === 'need'){
+                    const need = this.needDoList.splice(index,1);
+                    this.completeList.push(...need);
+                }
+                if(type === 'complete'){
+                    const complete = this.completeList.splice(index,1);
+                    this.needDoList.push(...complete);
+                }
+            },
+            deleteMask(index, type){
+                const deleteObj = type === 'need' ? this.needDoList : this.completeList;
+                deleteObj.splice(index,1);
             }
-            this.showGoods = true;
-            goods.index = typeIndex;
-            //删除的位置，删除的数量，删除后添加的值
-            // this.filterList.splice(goodsIndex, 1, type);
-
-            vm.$set(this.filterList, goodsIndex, type)
-            console.log(this.filterList);
-          },
-          deleteFilterGoods(goodsKey){
-            this.$delete(this.filterList, goodsKey);
-            this.goodsList[goodsKey].index = 0;
-            this.changeShow();
-          },
-          changeShow(){
-            const filter = JSON.stringify(this.filterList);
-            console.log(filter);
-            this.showGoods = filter !== "{}";
-          }
-        },
+        }
       });
-      vm.goodsList.forEach((item) => vm.$set(item, "index", 0));
 
     </script>
   </body>
