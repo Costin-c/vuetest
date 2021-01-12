@@ -3,54 +3,66 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>v-model</title>
     <script src="./vue.js"></script>
-    <link rel="stylesheet" href="./index.css">
   </head>
   <body>
-    <!-- 淘宝练习 -->
+    <!-- v-model,作用与表单数据双向绑定 -->
     <div id="app">
-        <div class="header">
-            <div class="container">
-                <div class="logo">toDoList</div>
-                <div class="input-area">
-                    <input type="text" @input="handleInput" :value="curMask">
-                    <button @click="addMask(curMask)">添加</button>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <h2>
-                <span>正在进行</span>
-                <span class="mask-num">{{ needDoList.length }}</span>
-            </h2>
-            <ul class="mask-list">
-                <li v-for="(mask, needIndex) in needDoList" :key="mask.id">
-                    <div>
-                        <input type="checkbox" @change="doCheck(needIndex, 'need')">
-                        <span>{{ mask.title }}</span>
-                    </div>
-                    <button @click="deleteMask(needIndex, 'need')">删除</button>
-                </li>
-            </ul>
-        </div>
-        <div class="container">
-            <h2>
-                <span>正在进行</span>
-                <span class="mask-num">{{ completeList.length }}</span>
-            </h2>
-            <ul class="mask-list complete-list">
-                <li v-for="(mask, completeIndex) in completeList" :key="mask.id">
-                    <div>
-                        <input type="checkbox" @change="doCheck(completeIndex, 'complete')">
-                        <span>{{ mask.title }}</span>
-                    </div>
-                    <button @click="deleteMask(completeIndex, 'complete')">删除</button>
-                </li>
-            </ul>
-        </div>
+      <input type="text" v-model="msg" />
+     <input type="text" @input="msg = $event.target.value" :value="msg" /><br>
+
+      <input type="checkbox" v-model="checked" /><br>
+
+      <input type="checkbox" id="cheng" value="成哥" v-model="checkList" />
+      <label for="cheng">成哥</label>
+
+      <input type="checkbox" id="deng" value="邓哥" v-model="checkList" />
+      <label for="deng">邓哥</label>
+
+      <input type="checkbox" id="tong" value="思彤哥" v-model="checkList" />
+      <label for="tong">思彤哥</label>
+
+      
+      <br>
+      <br>
+      <input type="radio" id="cheng" value="成哥" v-model="picked" />
+      <label for="cheng">成哥</label>
+
+      <input type="radio" id="deng" value="邓哥" v-model="picked" />
+      <label for="deng">邓哥</label>
+
+      <input type="radio" id="tong" value="思彤哥" v-model="picked" />
+      <label for="tong">思彤哥</label>
+
+      <br>
+      <br>
+      <textarea v-model="multipleText"></textarea>
+
+      <br>
+      <select v-model="select">
+        <option value="请选择" disabled>请选择</option>
+        <option value="成哥">成哥</option>
+        <option value="邓哥">邓哥</option>
+        <option value="思彤哥">思彤哥</option>
+      </select>
+
+      <br>
+      <select v-model="selectList" multiple>
+        <option value="成哥">成哥</option>
+        <option value="邓哥">邓哥</option>
+        <option value="思彤哥">思彤哥</option>
+      </select>
+
+      <br>
+      <input type="text" v-model.lazy="msg" />
+
+      <br>
+      <input type="number" v-model.number="msg" />
+
+      <br>
+      <input type="text" v-model.trim="msg" />
     </div>
-    
 
     <script>
       //控制元素方法二(延迟控制)
@@ -59,39 +71,19 @@
         //控制元素方法一
         el: "#app",
         data: {
-            curMask: '',
-            needDoList: [],
-            completeList: []
+          msg: "hello world",
+          checked: "xxx",
+          checkList: [],
+          picked: "",
+          multipleText: "hello, 你好呀",
+          select: "请选择",
+          selectList: [],
         },
-        methods: {
-            handleInput(e){
-                this.curMask = e.target.value;
-            },
-            addMask(){
-                if(this.curMask == ''){return;}
-                this.needDoList.push({
-                    title: this.curMask,
-                    id: Math.random()
-                })
-                this.curMask = '';
-            },
-            doCheck(index,type){
-                if(type === 'need'){
-                    const need = this.needDoList.splice(index,1);
-                    this.completeList.push(...need);
-                }
-                if(type === 'complete'){
-                    const complete = this.completeList.splice(index,1);
-                    this.needDoList.push(...complete);
-                }
-            },
-            deleteMask(index, type){
-                const deleteObj = type === 'need' ? this.needDoList : this.completeList;
-                deleteObj.splice(index,1);
-            }
-        }
+        methods: {},
       });
-
+      setTimeout(() => {
+        console.log(vm.msg);
+      }, 3000);
     </script>
   </body>
 </html>
