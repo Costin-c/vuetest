@@ -7,61 +7,18 @@
     <script src="./vue.js"></script>
   </head>
   <body>
-    <!-- v-model,作用与表单数据双向绑定 -->
+    <!-- 练习简易计算器 -->
     <div id="app">
-      <input type="text" v-model="msg" />
-     <input type="text" @input="msg = $event.target.value" :value="msg" /><br>
-
-      <input type="checkbox" v-model="checked" /><br>
-
-      <input type="checkbox" id="cheng" value="成哥" v-model="checkList" />
-      <label for="cheng">成哥</label>
-
-      <input type="checkbox" id="deng" value="邓哥" v-model="checkList" />
-      <label for="deng">邓哥</label>
-
-      <input type="checkbox" id="tong" value="思彤哥" v-model="checkList" />
-      <label for="tong">思彤哥</label>
-
-      
-      <br>
-      <br>
-      <input type="radio" id="cheng" value="成哥" v-model="picked" />
-      <label for="cheng">成哥</label>
-
-      <input type="radio" id="deng" value="邓哥" v-model="picked" />
-      <label for="deng">邓哥</label>
-
-      <input type="radio" id="tong" value="思彤哥" v-model="picked" />
-      <label for="tong">思彤哥</label>
-
-      <br>
-      <br>
-      <textarea v-model="multipleText"></textarea>
-
-      <br>
-      <select v-model="select">
-        <option value="请选择" disabled>请选择</option>
-        <option value="成哥">成哥</option>
-        <option value="邓哥">邓哥</option>
-        <option value="思彤哥">思彤哥</option>
-      </select>
-
-      <br>
-      <select v-model="selectList" multiple>
-        <option value="成哥">成哥</option>
-        <option value="邓哥">邓哥</option>
-        <option value="思彤哥">思彤哥</option>
-      </select>
-
-      <br>
-      <input type="text" v-model.lazy="msg" />
-
-      <br>
-      <input type="number" v-model.number="msg" />
-
-      <br>
-      <input type="text" v-model.trim="msg" />
+        <input type="number" name="" id="" v-model.number.lazy='num1'>
+        <select name="" id="" v-model="type">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+        </select>
+        <input type="number" name="" id="" v-model.number.lazy="num2">
+        <button @click="jisuan(type, num1, num2)">=</button>
+        <span> {{ result }} </span>
     </div>
 
     <script>
@@ -71,19 +28,20 @@
         //控制元素方法一
         el: "#app",
         data: {
-          msg: "hello world",
-          checked: "xxx",
-          checkList: [],
-          picked: "",
-          multipleText: "hello, 你好呀",
-          select: "请选择",
-          selectList: [],
+            num1: '',
+            num2: '',
+            type: '+',
+            result: 0
         },
-        methods: {},
+        methods: {
+            jisuan(type, num1, num2){
+                if(type === '+')  this.result = num1 + num2;
+                else if(type === '-') this.result = num1 - num2;
+                else if(type === '*') this.result = num1 * num2;
+                else if(type === '/') this.result = num1 / num2;
+            }
+        },
       });
-      setTimeout(() => {
-        console.log(vm.msg);
-      }, 3000);
     </script>
   </body>
 </html>
