@@ -615,3 +615,784 @@ Vue.config.keyCodes = {
 - .left
 - .right
 - .middle
+
+
+# 列表渲染
+利用v-for指令，基于数据多次渲染元素。
+
+## 在v-for中使用数组
+用法：(item, index) in items
+参数：items: 源数据数组
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;item：数组元素别名
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index：可选，索引
+可以访问所有父作用域的属性
+
+```html
+<ul id="app">
+  <li v-for="(person, index) in persons">
+    {{ index }}---{{ person.name }}---{{ person.age }}
+  </li>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    persons: [
+      { name: '杉杉', age: 18 },
+      { name: '思彤哥', age: 20 },
+      { name: '成哥', age: 22 },
+      { name: '邓哥', age: 88 },
+    ]
+  }
+})
+```
+可以利用```of```替代```in```作为分隔符，因为它更接近迭代器的语法：
+```html
+<div v-for="item of items"></div>
+```
+## 在v-for中使用对象
+用法：(value, key, index) in Object
+参数：value: 对象值
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key：可选，键名
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index：可选，索引
+```html
+<ul id="app">
+  <li v-for="(value, key, index) in shan">
+    {{ value }}
+  </li>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    shan: {
+      name: '杉',
+      age: 18,
+      height: '163cm'
+    }
+  }
+})
+```
+
+## 在v-for中使用数字
+用法：n in num
+参数：n: 数字，从1开始
+```html
+<div>
+  <span v-for="n in num">{{ n }} </span>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    num: 10
+  }
+})
+```
+
+## 在v-for中使用字符串
+用法：str in string
+参数：str: 字符串，源数据字符串中的每一个
+```html
+<div>
+  <span v-for="str in string">{{ str }} </span>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    string: 'shanshan'
+  }
+})
+```
+
+## 循环一段包含多个元素的内容
+可以利用template元素循环渲染一段包含多个元素的内容
+```html
+<ul id="app">
+  <template v-for="person in persons">
+    <li>{{ item.msg }}</li>
+    <li>哈哈</li>
+  </template>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    persons: ['shan', 'jc', 'cst', 'deng']
+  }
+})
+```
+## 关于key
+Vue更新使用v-for渲染的元素列表时，它默认使用“就地更新”的策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序，而是简单复用此处每个元素：
+```html
+<ul id="app">
+  <li v-for="(person, index) in persons">
+    {{ person }}
+    <input type="text" />
+    <button @click="handleClick(index)">下移</button>
+  </li>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    persons: ['shan', 'jc', 'cst', 'deng']
+  },
+  methods: {
+    handleClick (index) {
+      const deleteItem = this.persons.splice(index, 1);
+      this.persons.splice(index + 1, 0, ...deleteItem);
+    }
+  }
+})
+```
+在"就地复用"策略中，点击按钮，输入框不随文本一起下移，是因为输入框没有与数据绑定，所以vuejs默认使用已经渲染的dom，然而文本是与数据绑定的，所以文本被重新渲染。这种处理方式在vue中是默认的列表渲染策略，因为高效。
+
+这个默认的模式是高效的，但是在更多的时候，我们并不需要这样去处理，所以，为了给Vue一个提示，以便它能跟踪每个节点的身份，从而重用和重新排序现有元素，我们需要为每项提供一个<span style="color: red;">唯一</span>key特性，Vue会基于 key 的变化重新排列元素顺序，并且会移除 key 不存在的元素。
+
+### key的使用方法
+预期值：number | string
+有相同父元素的子元素必须有独特的 key，重复的 key 会造成渲染错误，key应唯一。
+```html
+<ul id="app">
+  <li v-for="(person, index) in persons" :key="person">
+    {{ person }}
+  </li>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    persons: ['杉杉', '思彤哥', '成哥', '邓哥']
+  }
+}) 
+```
+
+> 不建议将数组的索引作为key值，如：
+```html
+<li v-for="(person, index) in persons" :key="index">
+  {{ person }}
+</li>
+```
+当改变数组时，页面会重新渲染，Vue会根据key值来判断要不要移动元素。例如当页面重新渲染时，key值为"杉杉"的元素为``<li>杉杉</li>``，页面重新渲染前，key值为"杉杉"的元素也为``<li>杉杉</li>``，那么Vue就会移动这个``li``元素，而不是重新生成一个元素。
+当使用数组的索引作为key值时，页面重新渲染后，元素的key值会重新被赋值，例如我们将数组进行反转，
+反转前：
+元素 | key值 | 
+- | :-: | 
+``<li>杉杉</li>`` | 0 |
+``<li>思彤哥</li>`` | 1| 
+``<li>成哥</li>`` | 2 |
+``<li>邓哥</li>`` | 3 |
+反转后：
+元素 | key值 | 
+- | :-: | 
+``<li>邓哥</li>`` | 0 |
+``<li>成哥</li>`` | 1| 
+``<li>思彤哥</li>`` | 2 |
+``<li>杉杉</li>`` | 3 |
+Vue会比对渲染前后拥有同样key的元素，发现有变动，就会再生成一个元素，如果用索引作key值得话，那么此时，所有的元素都会被重新生成。
+
+> 那么key如何唯一的？
+
+跟后台协作时，传回来的每一条数据都有一个id值，这个id就是唯一的，用id做key即可。
+
+> key不仅为v-for所有，它可以强制替换元素，而不是重复使用它：
+
+```html
+<ul id="app">
+  <button @click="show = !show">{{ show ? '显示' : '隐藏'}}</button>
+  <input type="text" v-if="show" key="a" />
+  <input type="text" v-else key="b" />
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    show: true
+  }
+}) 
+```
+
+## v-for 和 v-if 一同使用
+永远不要把 v-if 和 v-for 同时用在同一个元素上。
+当 Vue 处理指令时，v-for 比 v-if 具有更高的优先级，所以这个模板：
+```html
+<ul>
+  <li
+    v-for="user in users"
+    v-if="user.isActive"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+```
+将会经过如下运算：
+```js
+this.users.map(function (user) {
+  if (user.isActive) {
+    return user.name
+  }
+})
+```
+因此哪怕我们只渲染出一小部分用户的元素，也得在每次重新渲染的时候遍历整个列表，不论活跃用户是否发生了变化。
+所以以下两种场景，我们可以做出如下处理：
+1. 为了过滤一个列表中的项目。
+```html
+<ul id="app">
+  <li
+    v-for="user in users"
+    v-if="user.isActive"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    users: [
+      { name: 'shan', isActive: true, id: 1},
+      { name: 'jc', isActive: false, id: 2},
+      { name: 'cst', isActive: false, id: 3},
+      { name: 'deng', isActive: true, id: 4},
+    ]
+  }
+})
+```
+可以把上面的代码更新为：
+```html
+<!-- 通过原来的数组，得到一个新数组，渲染这个新的数组 -->
+<ul>
+  <li
+    v-for="user in activeUsers"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    users: [
+      { name: 'shan', isActive: true, id: 1},
+      { name: 'jc', isActive: false, id: 2},
+      { name: 'cst', isActive: false, id: 3},
+      { name: 'deng', isActive: true, id: 4},
+    ],
+    activeUsers: []
+  }
+})
+vm.activeUsers = vm.users.filter(user => user.isActive);
+```
+这种方式仅为演示，在日后学习完计算属性后，要利用计算属性来做。
+
+2. 为了避免渲染本应该被隐藏的列表
+```html
+<ul>
+  <li
+    v-for="user in users"
+    v-if="shouldShowUsers"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    users: [
+      { name: 'shan', isActive: true, id: 1},
+      { name: 'jc', isActive: false, id: 2},
+      { name: 'cst', isActive: false, id: 3},
+      { name: 'deng', isActive: true, id: 4},
+    ],
+    shouldShowUsers: false
+  }
+})
+```
+html部分可替换成为：
+```html
+<ul v-if="shouldShowUsers">
+  <li
+    v-for="user in users"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+```
+将 v-if 置于外层元素上，我们不会再对列表中的每个用户检查 shouldShowUsers。取而代之的是，我们只检查它一次，且不会在 shouldShowUsers 为否的时候运算 v-for。
+
+# 练习_仿淘宝商品筛选
+css文件在文件夹中，自行拷贝
+所需数据：
+```js
+goodsList: [
+  {
+    title: '上装',
+    typeList: ['全部', '针织衫', '毛呢外套', 'T恤', '羽绒服', '棉衣', '卫衣', '风衣' ],
+    id: 1,
+  },
+  {
+    title: '裤装',
+    typeList: ['全部', '牛仔裤', '小脚/铅笔裤', '休闲裤' ,'打底裤', '哈伦裤'],
+    id: 2,
+  },
+  {
+    title: '裙装',
+    typeList: ['全部', '连衣裙', '半身裙', '长袖连衣裙', '中长款连衣裙'],
+    id: 3,
+  }
+]
+```
+
+# 练习_todoList
+css文件在文件夹中，自行拷贝
+
+
+# v-model指令
+可以在表单元素上创建双向数据绑定。即数据更新元素更新、元素更新数据也会更新。
+> 本质上v-model为语法糖
+
+元素类型 | 属性 |  事件  
+-|-|-
+input[type=text]、textarea | value | input |
+input[checkbox]、input[radio] | checked | change |
+select | value | change |
+
+
+## input
+
+### type=text 文本框
+```html
+<div id="app">
+  <input v-model="message">
+  <p>Message 为: {{ message }}</p>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data:; {
+    message: ''
+  }
+})
+```
+
+### type=checkbox 复选框
+#### 单个复选框
+绑定到布尔值，v-model="Boolean"
+```html
+<div id="app">
+  <input 
+    type="checkbox" 
+    id="checkbox" 
+    v-model="checked"
+  />
+  <label for="checkbox">{{ checked }}</label>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    checked: true
+  }
+})
+```
+
+#### 多个复选框
+绑定到同一个数组，v-model="Array"
+数组中的值为被选中的input框value值
+```html
+<div id="app">
+  <input type="checkbox" id="cheng" value="成哥" v-model="checkedNames">
+  <label for="cheng">成哥</label>
+
+  <input type="checkbox" id="deng" value="邓哥" v-model="checkedNames">
+  <label for="deng">邓哥</label>
+  
+  <input type="checkbox" id="tong" value="思彤哥" v-model="checkedNames">
+  <label for="tong">思彤哥</label>
+  <br>
+  <span>被选中的人有: {{ checkedNames }}</span>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    checkedNames: []
+  }
+}) 
+```
+
+### type=radio 单选框
+被绑定的数据和value同步
+```html
+<div id="app">
+  <input type="radio" id="cheng" value="成哥" v-model="picked">
+  <label for="cheng">成哥</label>
+  <input type="radio" id="deng" value="邓哥" v-model="picked">
+  <label for="deng">邓哥</label>
+  <input type="radio" id="tong" value="思彤哥" v-model="picked">
+  <label for="deng">思彤哥</label>
+  <br>
+  <span>被选中的人: {{ picked }}</span>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    picked: ''
+  }
+}) 
+```
+
+## textarea
+```html
+<div id="app">
+  <p >多行文本为：{{ message }}</p>
+  <textarea v-model="message" placeholder="添加文本"></textarea>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    message: ''
+  }
+})  
+```
+
+## select
+匹配的值为option中的汉字
+### 单选
+```html
+<div id="app">
+  <select v-model="selected">
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+  </select>
+  <span>选择: {{ selected === '请选择' ? '' : selected }}</span>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    selected: '请选择'
+  }
+}) 
+```
+<span style="color: red;">注意：</span>如果 v-model 表达式的初始值未能匹配任何选项，``<select>`` 元素将被渲染为“未选中”状态。在 iOS 中，这会使用户无法选择第一个选项。因为这样的情况下，iOS 不会触发 change 事件。因此，可以提供一个值为空的禁用选项：
+```html
+<div id="app">
+  <select v-model="selected">
+    <option :disabled="selected">请选择</option>
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+  </select>
+  <span>选择: {{ selected === '请选择' ? '' : selected }}</span>
+</div>
+```
+
+### 多选
+绑定到一个数组
+```html
+<div id="app">
+  <select v-model="selected" multiple>
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+  </select>
+  <span>选择: {{ selected }}</span>
+</div>
+```
+
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    selected: []
+  }
+}) 
+```
+
+## 修饰符
+### .lazy
+在默认情况下，v-model在每次input事件触发后将输入框的值与数据进行同步。如果要变为使用change事件同步可以添加lazy修饰符：
+```html
+<!-- 在“change”时而非“input”时更新 -->
+<input v-model.lazy="msg" >
+```
+
+### .number
+自动将用户的输入值转为数值类型：
+```html
+<input v-model.number="age" type="number">
+```
+
+### .trim
+自动过滤用户输入的<span style="font-weight: bold;">首尾</span>空白字符：
+```html
+<input v-model.trim="msg">
+```
+
+# 练习_简易计算器
+# 练习_调查问卷
+```js
+questionList: [
+  {
+    type: 'short',
+    title: '1.请问你的姓名是？',
+    chooseList: null,
+    answer: '',
+    id: 0
+  },
+  {
+    type: 'single',
+    title: '2.请问您的性别是？',
+    chooseList: [
+      '男',
+      '女',
+      '保密',
+    ],
+    answer: '',
+    id: 1,
+  },
+  {
+    type: 'multiple',
+    title: '3. 请选择您的兴趣爱好：',
+    chooseList: [
+      '看书',
+      '游泳',
+      '跑步',
+      '看电影',
+      '听音乐',
+    ],
+    answer: [],
+    id: 2,
+  },
+  {
+    type: 'long',
+    title: '4. 请介绍一下自己:',
+    chooseList: null,
+    answer: '',
+    id: 3,
+  },
+]
+```
+
+
+# 计算属性
+有些时候，我们在模板中放入了过多的逻辑，从而导致模板过重，且难以维护。例如：
+```html
+<div id="app">
+  {{ message.split('').reverse().join('') }}
+</div>
+```
+碰到这样的情况，我们必须看一段时间才能意识到，这里是想要显示变量message的翻转字符串，而且，一旦我们想要在模板中多次使用翻转字符串时，会更加麻烦。
+所以，当我们处理复杂逻辑时，都应该使用计算属性。
+
+## 基础用法
+
+计算属性是Vue配置对象中的属性，使用方式如下：
+```html
+<div id="app">
+  <!-- 计算属性的值可以像data数据一样，直接被使用 -->
+  {{ someComputed }}
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  computed: {
+    // 返回的值，就是计算属性的值
+    someComputed () {
+      return 'some values'
+    }
+  }
+})
+```
+
+例如，我们想要获取到一串字符串的翻转字符串，我们可以利用计算属性来做：
+```html
+<div id="app">
+  <p>原始字符串: "{{ msg }}"</p>
+  <p>翻转字符处啊: "{{ reversedMsg }}"</p>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    msg: 'Hello'
+  },
+  computed: {
+    reversedMsg: function () {
+      return this.msg.split('').reverse().join('');
+    }
+  }
+})
+```
+我们可以看到，reversedMsg的值取决于msg的值，所以，当我们更改msg的值是，reversedMsg的值也会随之更改。
+
+## 计算属性 vs 方法
+其实，我们上述的功能，利用方法也可以实现，如：
+```html
+<div id="app">
+  <p>原始字符串: "{{ msg }}"</p>
+  <p>翻转字符串: "{{ reversedMsg() }}"</p>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    msg: 'Hello'
+  },
+  methods: {
+    reversedMsg: function () {
+      return this.msg.split('').reverse().join('');
+    }
+  }
+})
+```
+虽然在表达式中调用方法也可以实现同样的效果，但是使用``计算属性``和使用``方法``有着本质的区别。
+当使用方法时，每一次页面重新渲染，对应的方法都会重新执行一次，如：
+```html
+<div id="app">
+  <p>{{ name }}</p>
+  <p>{{ reversedMsg() }}</p>
+</div>
+```
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    msg: 'Hello',
+    name: 'shanshan'
+  },
+  methods: {
+    reversedMsg: function () {
+      console.log('方法执行啦');
+      return this.msg.split('').reverse().join('');
+    }
+  }
+})
+vm.name = 'duyi';  
+```
+在上面的例子中我们可以看到，一旦更改name的值，页面会重新渲染，此刻控制台中打印出`方法执行啦`这串字符串，代表着reversedMsg这个函数执行了，但是我们并不需要该方法执行，因为改动的数据和这个函数没有任何关系，如果这个函数内的逻辑很复杂，那么对于性能来讲，也是一种消耗。
+
+但是利用计算属性做，就不会有这样的现象出现，如：
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    msg: 'Hello',
+    name: 'shanshan'
+  },
+  computed: {
+    reversedMsg: function () {
+      console.log('计算执行啦');
+      return this.msg.split('').reverse().join('');
+    }
+  }
+})
+vm.name = 'duyi';  
+```
+此时可以看到，当给数据name重新赋值时，计算属性并没有执行。
+所以，计算属性和方法的最本质的区别，是：<span style="font-weight: bold;">计算属性是基于响应式依赖进行缓存的</span>，计算属性的值一直存于缓存中，只要它依赖的data数据不改变，每次访问计算属性，都会立刻返回缓存的结果，而不是再次执行函数。而方法则是每次触发重新渲染，调用方法将总会再次执行函数。
+
+> 那么，为什么需要缓存呢？
+
+假如说，我们有一个计算属性A，它需要遍历一个巨大的数组并且做巨大的计算。然后我们需要使用到这个计算属性A，如果没有缓存，我们就会再次执行A的函数，这样性能开销就变得很大了。
+
+## 深入计算属性
+计算属性除了写成一个函数之外，还可以写成一个对象，对象内有两个属性，getter&setter，这两个属性皆为函数，写法如下：
+```js
+const vm = new Vue({
+  el: '#app',
+  computed: {
+    fullName: {
+      getter () {
+        // 一些代码
+      },
+      setter () {
+        // 一些代码
+      }
+    }
+  }
+})
+```
+
+### getter 读取
+在前面，我们直接将计算属性写成了一个函数，这个函数即为getter函数。也就是说，计算属性默认只有getter。
+getter的this，被自动绑定为Vue实例。
+
+> 何时执行？
+
+当我们去获取某一个计算属性时，就会执行get函数。
+
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    msg: 'Hello'
+  },
+  computed: {
+    reversedMsg: {
+      getter () {
+        return this.msg.split('').reverse().join('');
+      }
+    }
+  }
+})
+```
+
+### setter 设置
+可选，set函数在给计算属性重新赋值时会执行。
+参数：为被重新设置的值。
+setter的this，被自动绑定为Vue实例。
+
+
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    msg: 'Hello',
+    firstStr: ''
+  },
+  computed: {
+    reversedMsg: {
+      getter () {
+        return this.msg.split('').reverse().join('');
+      },
+      setter (newVal) {
+        this.firstStr = newVal[0];
+      }
+    }
+  }
+})
+```
+要注意，即使给计算属性赋了值，计算属性也不会改变，在重复一遍，只有当依赖的响应式属性变化了，计算属性才会重新计算。
