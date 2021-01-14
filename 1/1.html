@@ -32,16 +32,40 @@
     </div>
 
     <script>
+        axios.defaults.baseURL = 'https://developer.duyiedu.com/vue';
+        axios.interceptors.request.use(config => {
+            console.log(config);
+            // config.method = 'post';
+            return config;
+        }, error => {
+            alert('xxxx');
+            return Promise.reject(error);
+        });
 
-        const a = axios.create({
-            baseURL: '/a'
-        })
-        const b = axios.create({
-            baseURL: '/b'
-        })
-        const c = axios.create({
-            baseURL: '/c'
-        })
+        const interceptor = axios.interceptors.response.use(response => {
+            if (response.status === 200) {
+                return response.data;
+            } else {
+                // ...
+            }
+        }, error => {
+            if (error.response) {
+                console.log('响应时错误');
+            } else if (error.request) {
+                // 请求时错误
+                console.log('请求时错误');
+            }
+            // console.log(error.request);
+            // console.log(error.response);
+            return Promise.reject(error);
+        });
+
+        // axios.interceptors.response.eject(interceptor);
+
+        const instance = axios.create();
+        instance.interceptors.request.use();
+
+        const source = axios.CancelToken.source();
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
         const vm = new Vue({
@@ -55,21 +79,18 @@
             },
             methods: {
                 show() {
-                    axios({
-                        method: 'get',
-                        baseURL: 'https://developer.duyiedu.com/vue',
-                        url: '/getUserInfo',
-                    }).then(res=>{
-                        this.msg = res.data.msg;
-                        this.personList = res.data.data;
-                        console.log(res.data);
-                    }).catch(err=>{
-                        this.msg = res.data.msg;
-                    })
+                    axios.get('/getUserInfo').then(res => {
+                        console.log(res);
+                        // this.msg = res.data.msg;
+                        // this.personList = res.data.data;
+                    });
                 },
                 get() {
 
                 },
+                handleCancelGet () {
+                    source.cancel('取消请求');
+                }
             },
             computed: {
 
@@ -84,18 +105,6 @@
                 }
             }
         });
-
-        axios.all([
-            a.get('/xxx'),
-            b.get('/xxxxxx'),
-            c.get('/xxxaaa'),
-        ]).then(axios.spread((a,b,c)=>{
-            console.log(a,b,c);
-        })).catch(axios.spread((erra,errb,errc)=>{
-            console.log(erra,errb,errc);
-        }))
-        
-        
     </script>
 </body>
 
