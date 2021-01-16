@@ -7,103 +7,77 @@
     <title>title</title>
     </title>
     <script src="./vue.js"></script>
-    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
-    <script src="./axios.js"></script>
+
 </head>
 
 <body>
     <!-- vue-resource -->
     <div id="app">
-        <div class="name">
-            <input type="text" name="" id="" placeholder="用户名" v-model="name">
-        </div>
-        <div class="mail">
-            <input type="text" placeholder="邮箱" v-model="mail">
-        </div>
-        <button class="add" @click="get">添加</button>
-        <button class="show" @click="show">展示</button>
-        <!-- <button class="test-btn" @click="handleTest">测试jsonp</button> -->
-        <ul v-if="personList.length">
-            <li v-for="people in personList">
-                <span>{{ people.name }}</span>
-                <span>{{ people.mail }}</span>
-            </li>
-        </ul>
+        {{ msg }}
     </div>
 
     <script>
-        axios.defaults.baseURL = 'https://developer.duyiedu.com/vue';
-        axios.interceptors.request.use(config => {
-            console.log(config);
-            // config.method = 'post';
-            return config;
-        }, error => {
-            alert('xxxx');
-            return Promise.reject(error);
-        });
-
-        const interceptor = axios.interceptors.response.use(response => {
-            if (response.status === 200) {
-                return response.data;
-            } else {
-                // ...
-            }
-        }, error => {
-            if (error.response) {
-                console.log('响应时错误');
-            } else if (error.request) {
-                // 请求时错误
-                console.log('请求时错误');
-            }
-            // console.log(error.request);
-            // console.log(error.response);
-            return Promise.reject(error);
-        });
-
-        // axios.interceptors.response.eject(interceptor);
-
-        const instance = axios.create();
-        instance.interceptors.request.use();
-
-        const source = axios.CancelToken.source();
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
         const vm = new Vue({
             //控制元素方法一
-            el: "#app",
+            el: '#app',
             data: {
-                msg: '',
-                name: '',
-                mail: '',
-                personList: [],
+                msg: 'hello world'
             },
             methods: {
-                show() {
-                    axios.get('/getUserInfo').then(res => {
-                        console.log(res);
-                        // this.msg = res.data.msg;
-                        // this.personList = res.data.data;
-                    });
-                },
-                get() {
-
-                },
-                handleCancelGet () {
-                    source.cancel('取消请求');
+                handle() {
+                    console.log('xx');
                 }
-            },
-            computed: {
-
             },
             watch: {
-                msg() {
-                    if (this.msg === '') {
-                        return;
-                    }
-                    alert(this.msg);
-                    this.msg = '';
+                msg: {
+                    handler() {
+                        console.log('偵聽msg的值')
+                    },
+                    immediate: true
                 }
-            }
+            },
+            beforeCreate() {
+                this.timer = setInterval(() => {
+                    console.log(1);
+                }, 1000)
+
+                console.log(this.msg);
+                console.log(this.handle);
+                console.log('-----beforeCreate-----');
+            },
+            created() {
+                console.log(this.msg);
+                console.log(this.handle);
+                console.log(this.$el);
+                console.log('-----created------');
+            },
+            beforeMount() {
+                console.log(this.$el);
+                console.log('------beforeCreate-----');
+            },
+            mounted() {
+                console.log(this.$el);
+                console.log('-----------mounted-----------');
+            },
+            beforeUpdate() {
+                console.log(this.msg);
+                console.log(this.$el.outerHTML);
+                console.log('-----beforeUpdate----');
+            },
+            updated() {
+                console.log(this.msg);
+                console.log(this.$el.outerHTML);
+                console.log('------updated------');
+            },
+            beforeDestroy() {
+                clearInterval(this.timer);
+                console.log('-----beforeDestroy----');
+            },
+            destroyed() {
+                console.log('-----destoryed-----');
+            },
         });
     </script>
 </body>
