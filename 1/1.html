@@ -7,58 +7,64 @@
     <title>title</title>
     </title>
     <script src="./vue.js"></script>
+    <link rel="stylesheet" href="./index.css">
 
 </head>
 
 <body>
     <!-- 组件基础 -->
     <div id="app">
-
+        <video-list :video-list="videoList"></video-list>
     </div>
 
-    <div id="app1">
-        
-    </div>
     <script>
+        Vue.component('video-list', {
+            props: ['videoList'],
+            template: `
+                <div class="video-list">
+                <video-item
+                    v-for="video in videoList"
+                    v-bind="video"
+                ></video-item>
+                </div>
+            `
+        })
 
-        Vue.component('ch-000',{
-            data() {
-                return {
-                    a: "asdasd"
-                }
-            },
-            template: `<div>自定义组件{{ a }}</div>`
+        Vue.component('video-item', {
+            props: ['poster', 'play', 'rank', 'title'],
+            template: `
+                <div class="video-item">
+                <div class="poster">
+                    <img :src="poster" alt="">
+                    <div class="info">
+                    <div class="play">{{ play }}</div>
+                    <div class="rank">{{ rank }}</div>
+                    </div>
+                </div>
+                <div class="title">{{ title }}</div>
+                </div>
+            `
         });
+
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
         const vm = new Vue({
             //控制元素方法一
             el: '#app',
-            data:{
-                msg: 'asdasd'
+            data: {
+                videoList: [],
             },
-            components:{
-                'ChShuai': {
-                    template: `
-                        <div>app</div>
-                    `
-                },
+            created() {
+                axios.get('https://developer.duyiedu.com/vue/bz/video', {
+                    params: {
+                        start: 0,
+                        offset: 12
+                    }
+                }).then(res => {
+                    this.videoList = res.data.data
+                })
             },
-            // 这个是模板，输入的东西会改变
-            // 想用大驼峰式需要在模板里使用，挂载到上面
-            template: `
-                <div>
-                    <ch-shuai></ch-shuai>
-                    <ch-shuai />
-                    <ChShuai></ChShuai>
-                    <ChShuai />
-                    {{ msg }}
-                </div>`
         });
-
-        const vm2 = new Vue({
-            el: "#app1",
-        })
     </script>
 </body>
 
