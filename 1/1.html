@@ -11,9 +11,9 @@
 </head>
 
 <body>
-    <!-- vue-resource -->
+    <!-- 练习 -->
     <div id="app">
-        {{ msg }}
+        
     </div>
 
     <script>
@@ -23,60 +23,13 @@
             //控制元素方法一
             el: '#app',
             data: {
-                msg: 'hello world'
+
             },
             methods: {
-                handle() {
-                    console.log('xx');
-                }
+
             },
             watch: {
-                msg: {
-                    handler() {
-                        console.log('偵聽msg的值')
-                    },
-                    immediate: true
-                }
-            },
-            beforeCreate() {
-                this.timer = setInterval(() => {
-                    console.log(1);
-                }, 1000)
 
-                console.log(this.msg);
-                console.log(this.handle);
-                console.log('-----beforeCreate-----');
-            },
-            created() {
-                console.log(this.msg);
-                console.log(this.handle);
-                console.log(this.$el);
-                console.log('-----created------');
-            },
-            beforeMount() {
-                console.log(this.$el);
-                console.log('------beforeCreate-----');
-            },
-            mounted() {
-                console.log(this.$el);
-                console.log('-----------mounted-----------');
-            },
-            beforeUpdate() {
-                console.log(this.msg);
-                console.log(this.$el.outerHTML);
-                console.log('-----beforeUpdate----');
-            },
-            updated() {
-                console.log(this.msg);
-                console.log(this.$el.outerHTML);
-                console.log('------updated------');
-            },
-            beforeDestroy() {
-                clearInterval(this.timer);
-                console.log('-----beforeDestroy----');
-            },
-            destroyed() {
-                console.log('-----destoryed-----');
             },
         });
     </script>
