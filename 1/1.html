@@ -7,64 +7,142 @@
     <title>title</title>
     </title>
     <script src="./vue.js"></script>
-    <link rel="stylesheet" href="./index.css">
 
 </head>
 
 <body>
     <!-- 组件基础 -->
     <div id="app">
-        <video-list :video-list="videoList"></video-list>
+        father: {{ array }}
+        <button @click="array.push(4)">father 點擊</button>
+        <my-array :array="array"></my-array>
+
+        <!-- {{ count }}
+        <my-count :count="count"></my-count> -->
     </div>
 
+
+    <!-- 非prop特性会替换/合并（class、style）已有特性 -->
+    <div id="app2">
+        <my-cmp type="radio" class="haha"></my-cmp>
+    </div>
+
+    <div id="app1">
+        <my-cmp :list="list"></my-cmp>
+    </div>
     <script>
-        Vue.component('video-list', {
-            props: ['videoList'],
+        // 35
+        Vue.component('my-array', {
+            props: {
+                array: Array
+            },
+            data() {
+                return {
+                    myArray: this.array, // 引用 深度克隆
+                }
+            },
             template: `
-                <div class="video-list">
-                <video-item
-                    v-for="video in videoList"
-                    v-bind="video"
-                ></video-item>
-                </div>
-            `
+        <div>
+          son: {{ myArray }}
+          <button @click="myArray.push(4)">son 點擊</button>
+        </div>
+      `
         })
 
-        Vue.component('video-item', {
-            props: ['poster', 'play', 'rank', 'title'],
-            template: `
-                <div class="video-item">
-                <div class="poster">
-                    <img :src="poster" alt="">
-                    <div class="info">
-                    <div class="play">{{ play }}</div>
-                    <div class="rank">{{ rank }}</div>
-                    </div>
-                </div>
-                <div class="title">{{ title }}</div>
-                </div>
-            `
-        });
+        size = "str"
+        str = "    xxXX    ";
 
+        Vue.component('my-count', {
+            props: {
+                count: Number
+            },
+            data() {
+                return {
+                    myCount: this.count
+                }
+            },
+            template: `
+        <div>
+          son: {{ myCount }}
+          <button @click="myCount ++">son 點擊</button>
+        </div>
+      `
+        })
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
         const vm = new Vue({
             //控制元素方法一
             el: '#app',
             data: {
-                videoList: [],
+                count: 0,
+                array: [1, 2, 3]
             },
-            created() {
-                axios.get('https://developer.duyiedu.com/vue/bz/video', {
-                    params: {
-                        start: 0,
-                        offset: 12
-                    }
-                }).then(res => {
-                    this.videoList = res.data.data
-                })
-            },
+
         });
+
+
+        // 34
+        Vue.component('my-cmp', {
+            // props: ['list'],
+            props: {
+                list: {
+                    type: Array,
+                    default () {
+                        return [{
+                                name: '哈哈'
+                            },
+                            {
+                                name: '嘿嘿'
+                            }
+                        ]
+                    },
+                    required: true,
+                    validator(prop) {
+                        return prop.length > 3;
+                    },
+                }
+            },
+            template: `
+        <ul>
+          <li
+            v-for="person in list"
+            :key="person.name"
+          >{{ person.name }}</li>
+        </ul>
+      `
+        });
+        const vm1 = new Vue({
+            el: '#app1',
+            data: {
+                list: [{
+                        name: '杉杉'
+                    },
+                    {
+                        name: '渡一'
+                    }
+                ],
+                // list: 2
+            }
+        })
+
+        // 36
+        Vue.component('my-cmp', {
+            props: ['a'],
+            inheritAttrs: false,
+            mounted() {
+                console.log(this.$attrs);
+            },
+            template: `
+        <label>
+          选择：
+          <input v-bind="$attrs" />
+        </label>
+      `
+        })
+        const vm2 = new Vue({
+            el: '#app2',
+
+        })
     </script>
 </body>
 
