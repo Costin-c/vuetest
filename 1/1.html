@@ -11,27 +11,54 @@
 </head>
 
 <body>
-    <!-- 练习 -->
+    <!-- 组件基础 -->
     <div id="app">
-        
+
     </div>
 
+    <div id="app1">
+        
+    </div>
     <script>
+
+        Vue.component('ch-000',{
+            data() {
+                return {
+                    a: "asdasd"
+                }
+            },
+            template: `<div>自定义组件{{ a }}</div>`
+        });
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
         const vm = new Vue({
             //控制元素方法一
             el: '#app',
-            data: {
-
+            data:{
+                msg: 'asdasd'
             },
-            methods: {
-
+            components:{
+                'ChShuai': {
+                    template: `
+                        <div>app</div>
+                    `
+                },
             },
-            watch: {
-
-            },
+            // 这个是模板，输入的东西会改变
+            // 想用大驼峰式需要在模板里使用，挂载到上面
+            template: `
+                <div>
+                    <ch-shuai></ch-shuai>
+                    <ch-shuai />
+                    <ChShuai></ChShuai>
+                    <ChShuai />
+                    {{ msg }}
+                </div>`
         });
+
+        const vm2 = new Vue({
+            el: "#app1",
+        })
     </script>
 </body>
 
