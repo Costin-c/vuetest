@@ -11,62 +11,32 @@
 </head>
 
 <body>
-    <!-- 组件基础 -->
+    <!-- 监听组件事件 -->
+    <!-- 这里的value特性名可以随意，但是后面传入的是data里面的  
+        下面组件props创建的名字要与绑定特性一样，
+        并且模板里面的值就是props筛选过的值也就是value（data中name值） 
+    -->
+
+
     <div id="app">
-        father: {{ array }}
-        <button @click="array.push(4)">father 點擊</button>
-        <my-array :array="array"></my-array>
-
-        <!-- {{ count }}
-        <my-count :count="count"></my-count> -->
+        <!-- <ch-div :value="name" @input="name = $event"></ch-div> -->
+        <ch-div v-model="name"></ch-div>
     </div>
 
-
-    <!-- 非prop特性会替换/合并（class、style）已有特性 -->
-    <div id="app2">
-        <my-cmp type="radio" class="haha"></my-cmp>
-    </div>
-
-    <div id="app1">
-        <my-cmp :list="list"></my-cmp>
-    </div>
     <script>
-        // 35
-        Vue.component('my-array', {
+        // 子组件内触发事件   在父组件内监听子组件的事件
+        // 自定义事件 enlarge-text
+        // $emit(name)
+        // v-bind .sync 语法糖 :prop @updata:prop
+        Vue.component('ch-div', {
             props: {
-                array: Array
-            },
-            data() {
-                return {
-                    myArray: this.array, // 引用 深度克隆
-                }
+                value: String,
             },
             template: `
-        <div>
-          son: {{ myArray }}
-          <button @click="myArray.push(4)">son 點擊</button>
-        </div>
-      `
-        })
-
-        size = "str"
-        str = "    xxXX    ";
-
-        Vue.component('my-count', {
-            props: {
-                count: Number
-            },
-            data() {
-                return {
-                    myCount: this.count
-                }
-            },
-            template: `
-        <div>
-          son: {{ myCount }}
-          <button @click="myCount ++">son 點擊</button>
-        </div>
-      `
+                <label>
+                    姓名：<input type="text" :value="value" @input="$emit('input',$event.target.value)"/>
+                </label>
+            `
         })
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
@@ -74,75 +44,10 @@
             //控制元素方法一
             el: '#app',
             data: {
-                count: 0,
-                array: [1, 2, 3]
+                name: '崔浩',
             },
 
         });
-
-
-        // 34
-        Vue.component('my-cmp', {
-            // props: ['list'],
-            props: {
-                list: {
-                    type: Array,
-                    default () {
-                        return [{
-                                name: '哈哈'
-                            },
-                            {
-                                name: '嘿嘿'
-                            }
-                        ]
-                    },
-                    required: true,
-                    validator(prop) {
-                        return prop.length > 3;
-                    },
-                }
-            },
-            template: `
-        <ul>
-          <li
-            v-for="person in list"
-            :key="person.name"
-          >{{ person.name }}</li>
-        </ul>
-      `
-        });
-        const vm1 = new Vue({
-            el: '#app1',
-            data: {
-                list: [{
-                        name: '杉杉'
-                    },
-                    {
-                        name: '渡一'
-                    }
-                ],
-                // list: 2
-            }
-        })
-
-        // 36
-        Vue.component('my-cmp', {
-            props: ['a'],
-            inheritAttrs: false,
-            mounted() {
-                console.log(this.$attrs);
-            },
-            template: `
-        <label>
-          选择：
-          <input v-bind="$attrs" />
-        </label>
-      `
-        })
-        const vm2 = new Vue({
-            el: '#app2',
-
-        })
     </script>
 </body>
 
