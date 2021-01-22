@@ -14,75 +14,60 @@
     <!-- 混入 -->
 
     <div id="app">
-        <cmp-1></cmp-1>
-        <cmp-2></cmp-2>
+        {{ content | capitalize }}
+
+        {{ money | toMoney }}
+
+        {{ likes | addWord }}
     </div>
 
     <script>
-     const mixin = {
-      data () {
-        return {
-          a: 'a',
-        }
-      },
-      mounted () {
-        // console.log('mixin');
-      },
-      methods: {
-        fn () {
-          console.log('mixin fn');
-        }
-      }
-    };
-    Vue.mixin({
-      created () {
-        // console.log('全局混入 created 钩子');
-        const xxx = this.$options.xxx;
+        // filter
+        Vue.filter('filterA', (val, a) => {
+            console.log(val, a);
+            return 'aaa';
+        });
 
-        if(xxx) {
-          console.log('xxxx');
-        }
-      },
-    });
+        Vue.filter('filterB', (val) => {
+            console.log(val);
+            return 'bbb';
+        });
 
-    Vue.component('cmp-1', {
-      xxx: 'xxx',
-      mixins: [mixin],
-      data () {
-        return {
-          a: 'b'
-        }
-      },
-      mounted () {
-        // console.log(this.a);
-        this.fn();
-      },
-      methods: {
-        fn () {
-          // console.log('cmp fn');
-        }
-      },
-      template: `
-        <div>cmp-1</div>
-      `
-    })
+        Vue.filter('capitalize', val => {
+            if (!val) {
+                return
+            };
+            return val.charAt(0).toUpperCase() + val.slice(1);
+        })
 
-    Vue.component('cmp-2', {
-      data () {
-        return {
-          a: 'a'
-        }
-      },
-      template: `
-        <div>cmp-2</div>
-      `
-    })
+        Vue.filter('toMoney', val => {
+            if (!val) {
+                return
+            };
+
+            return val.toLocaleString();
+        })
+
+        Vue.filter('addWord', val => {
+            if (!val) {
+                return
+            };
+
+            if (val > 10000) {
+                return (val / 10000).toFixed(1) + '万';
+            }
+
+            return val;
+        })
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
         const vm = new Vue({
             //控制元素方法一
             el: '#app',
             data: {
+                content: 'shanshan',
+                money: 82736582365287,
+                likes: 7675876
             },
         });
     </script>
