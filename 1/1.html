@@ -11,32 +11,58 @@
 </head>
 
 <body>
-    <!-- 监听组件事件 -->
-    <!-- 这里的value特性名可以随意，但是后面传入的是data里面的  
-        下面组件props创建的名字要与绑定特性一样，
-        并且模板里面的值就是props筛选过的值也就是value（data中name值） 
-    -->
-
+    <!-- 插槽 -->
 
     <div id="app">
-        <!-- <ch-div :value="name" @input="name = $event"></ch-div> -->
-        <ch-div v-model="name"></ch-div>
+
+        <ch-vue>
+            <template #header>
+                头部
+            </template >
+           <template #main>
+               内容
+           </template>
+           <template #footer>
+               底部
+           </template>
+
+           <!-- 特性写法 -->
+           <template v-slot="user">
+                {{ user.people.name }}
+           </template>
+           <!-- 解构写法 -->
+           <!-- <template v-slot="{ people }">
+                {{ people.name }}
+            </template> -->
+        </ch-vue>
     </div>
 
     <script>
-        // 子组件内触发事件   在父组件内监听子组件的事件
-        // 自定义事件 enlarge-text
-        // $emit(name)
-        // v-bind .sync 语法糖 :prop @updata:prop
-        Vue.component('ch-div', {
-            props: {
-                value: String,
+        Vue.component('ch-vue',{
+            data() {
+                return {
+                    people: {
+                        name: 'abc',
+                        age: 18
+                    }
+                }
             },
             template: `
-                <label>
-                    姓名：<input type="text" :value="value" @input="$emit('input',$event.target.value)"/>
-                </label>
+                <div>
+                    <header>
+                        <slot name="header"></slot>
+                    </header>
+                    <main>
+                        <slot name="main"></slot>
+                    </main>
+                    <footer>
+                        <slot name="footer"></slot>
+                    </footer>
+                    
+                    <slot :people="people"></slot>
+                </div>
             `
+            // <-- 这里需要绑定 -->
         })
         //控制元素方法二(延迟控制)
         // vm.$mount('#app');
@@ -44,7 +70,7 @@
             //控制元素方法一
             el: '#app',
             data: {
-                name: '崔浩',
+ 
             },
 
         });
