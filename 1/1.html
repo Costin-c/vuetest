@@ -11,79 +11,43 @@
 </head>
 
 <body>
-    <!-- 插槽 -->
+    <!-- 通信 -->
 
     <div id="app">
-        <!-- <component is="cmp-b"></component> -->
-        <button v-for="page in pages" @click="cmpPage = page.cmp" :key="page.id">{{ page.name }}</button>
-        <keep-alive>
-            <component :is="cmpPage"></component>
-        </keep-alive>
+        <my-cmp @click="fn"></my-cmp>
+        <my-cmp1></my-cmp1>
     </div>
 
     <script>
-        Vue.component('cmp-post', {
+        Vue.prototype.$bus = new Vue();
+
+        Vue.component('my-cmp', {
             data() {
                 return {
-                    postCmp: undefined,
-                    posts: [{
-                            title: '標題',
-                            content: {
-                                template: `<div>内容1</div>`
-                            },
-                            id: 11
-                        },
-                        {
-                            title: '標題1',
-                            content: {
-                                template: `<div>内容2</div>`
-                            },
-                            id: 12
-                        },
-                        {
-                            title: '標題2',
-                            content: {
-                                template: `<div>内容3</div>`
-                            },
-                            id: 13
-                        },
-
-                    ]
+                    name: 'my-cmp',
                 }
             },
-            created() {
-                this.postCmp = this.posts[0].content;
-            },
-            activated() {
-                console.log('post activated');
-            },
-            deactivated() {
-                console.log('post deactivated');
+            methods: {
+                onClick() {
+                    // this.$listeners.click(this.name);
+                    // console.log(this.$listeners);
+                    this.$bus.$emit('bus', this.name);
+                }
             },
             template: `
-        <div>
-          <button
-            v-for="post in posts"
-            :key="post.id"
-            @click="postCmp = post.content"
-          >{{ post.title }}</button>
-          <keep-alive>
-            <component :is="postCmp"></component>
-          </keep-alive>
-        </div>
-      `
+    <div @click="onClick">my-cmp</div>
+  `
         })
 
-        Vue.component('cmp-more', {
-            activated() {
-                console.log('more activated');
-            },
-            deactivated() {
-                console.log('more deactivated');
+        Vue.component('my-cmp1', {
+            mounted() {
+                this.$bus.$on('bus', (val) => {
+                    console.log(val);
+                })
             },
             template: `
-        <div>more</div>
-      `
+    <div>my-cmp1</div>
+  `
         })
 
         //控制元素方法二(延迟控制)
@@ -92,20 +56,16 @@
             //控制元素方法一
             el: '#app',
             data: {
-                cmpPage: 'cmp-post',
-                pages: [{
-                        name: '博客',
-                        cmp: 'cmp-post',
-                        id: 0
-                    },
-                    {
-                        name: '更多',
-                        cmp: 'cmp-more',
-                        id: 1
-                    },
-                ]
-            },
 
+            },
+            mounted() {
+                // console.log(this.$children[0].name);
+            },
+            methods: {
+                fn(name) {
+                    console.log(name);
+                }
+            }
         });
     </script>
 </body>
