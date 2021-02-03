@@ -1,17 +1,19 @@
 <template>
   <div id="app">
-    <div class="header">
-      <div class="logo" @click="handleClick">xxx学院</div>
-      <div class="list">
+
+    <div class="nav-box">
+      <div class="logo" @click="handleClick">渡一教育</div>
+      <div class="nav-list">
         <router-link to="/home">首页</router-link>
-        <router-link to="/learn">学习</router-link>
-        <router-link to="/student">学员</router-link>
+        <router-link to="/learn">课程学习</router-link>
+        <router-link to="/student">学员展示</router-link>
         <router-link to="/about">关于</router-link>
         <router-link to="/activity">社区</router-link>
       </div>
     </div>
-    <div class="content">
+    <div class="container">
       <router-view></router-view>
+      <router-view name="student"></router-view>
     </div>
   </div>
 </template>
@@ -23,7 +25,7 @@ export default {
   components: {
   },
   methods: {
-    handleClick(){
+    handleClick () {
       this.$router.push('/home');
     }
   },
@@ -31,35 +33,35 @@ export default {
 </script>
 
 <style scoped>
-  *{
-    margin: 0;
-    padding: 0;
-  }
-  .header{
-    display: flex;
-    justify-content: space-between;
-    height: 60px;
-    line-height: 60px;
-    background-color: dodgerblue;
-  }
-  .header .logo{
-    color: #fff;
-  }
-  .header .list a{
-    text-decoration: none;
-    margin-left: 15px;
-  }
-  .header .list a.router-link-active{
-    color: #fff;
-    font-weight: bold;
-  }
-  .content{
-    margin-top: 50px;
-  }
-  .content,
-  .header{
-    padding: 0 100px;
-  }
+.nav-box {
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  line-height: 60px;
+  background-color: #3385ff
+}
 
+.nav-box .logo {
+  color: #fff;
+}
 
+.nav-list a {
+  margin-left: 40px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-list a.router-link-active {
+  font-weight: bold;
+}
+
+.container {
+  margin-top: 60px;
+}
+
+.nav-box,
+.container {
+  padding-left: 200px;
+  padding-right: 200px;
+}
 </style>

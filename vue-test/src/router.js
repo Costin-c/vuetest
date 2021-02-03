@@ -1,70 +1,82 @@
 import Vue from 'vue';
-import vueRouter from 'vue-router';
+import VueRouter from 'vue-router';
 import Home from './views/Home';
 
-//使用路由
-Vue.use(vueRouter);
+Vue.use(VueRouter);
 
-
-//设置路径的
 const routes = [
-    {
-      path: '/',
-      redirect: '/home'
+  {
+    path: '/',
+    redirect: '/home',
+  },
+  {
+    path: '/home',
+    component: Home,
+    // alias: '/',
+  },
+  {
+    path: '/learn',
+    // component: () => import('./views/Learn'),
+    components: {
+      default: () => import('./views/Learn'),
+      student: () => import('./views/Student'),
     },
-    {
-      path: '/home',
-      component: Home
+  },
+  {
+    path: '/student',
+    component: () => import('./views/Student'),
+  },
+  {
+    path: '/about',
+    component: () => import('./views/About'),
+  },
+  {
+    path: '/activity',
+    component: () => import(/* webpackChunkName: 'academic' */'./views/Activity'),
+    redirect (to) {
+      return {
+        name: 'academic',
+      }
     },
-    {
-      path: '/learn',
-      component: () => import('./views/Learn')
-    },
-    {
-      path: '/student',
-      component: () => import('./views/Student')
-    },
-    {
-      path: '/about',
-      component: () => import('./views/About')
-    },
-    {
-      path: '/activity',
-      component: () => import(/* webpackChunkName: 'AAA' */'./views/Activity'),
-      // 方法一
-      // redirect (to) {
-      //   return {
-      //     name: 'a',
-      //   }
+    children: [
+      // {
+      //   path: '',
+      //   component: () => import('./views/Academic'),
       // },
-      // 方法二
-      // redirect: '/activity/a',
-      // 方法三
-      redirect: {name: 'a'},
-      
-      children: [
-        {
-          path: 'a',
-          name: 'a',
-          component: () => import(/* webpackChunkName: 'AAA' */'./views/A')
-        },
-        {
-          path: 'b',
-          name: 'b',
-          component: () => import('./views/B')
-        },
-        {
-          path: 'c',
-          name: 'c',
-          component: () => import('./views/C')
-        },
-      ]
-    },
-  ];
+      {
+        path: 'academic',
+        name: 'academic',
+        component: () => import(/* webpackChunkName: 'academic' */'./views/Academic'),
+      },
+      {
+        path: 'personal',
+        name: 'personal',
+        component: () => import('./views/Personal'),
+      },
+      {
+        path: 'download',
+        name: 'download',
+        component: () => import('./views/Download'),
+      },
+    ],
+  },
+  {
+    path: '/course/:userId',
+    component: () => import('./views/About'),
+  },
+  {
+    path: '/question/:id',
+    name: 'question',
+    // props: true,
+    props: route => ({
+      // name: route.name,
+      id: route.params.id 
+    }),
+    component: () => import('./views/Question'),
+  },
+];
 
-
-  //路由配置参数
-export default new vueRouter({
-    mode: 'history',
-    routes,
-  })
+export default new VueRouter({
+  mode: 'history',
+  routes,
+});

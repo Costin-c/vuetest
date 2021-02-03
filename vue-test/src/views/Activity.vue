@@ -1,13 +1,13 @@
 <template>
-    <div class="activity">
-        <router-link :to="{ name: 'a' }">A</router-link>
-        <router-link :to="{ name: 'b' }">B</router-link>
-        <router-link :to="{ name: 'c' }">C</router-link>
+  <div class="activity">
+    <router-link :to="{ name: 'academic'}">学术讨论</router-link>
+    <router-link :to="{ name: 'personal'}">个人中心</router-link>
+    <router-link :to="{ name: 'download'}">资源下载</router-link>
 
-        <div class="content">
-            <router-view></router-view>
-        </div>
+    <div class="activity-view">
+      <router-view></router-view>
     </div>
+  </div>
 </template>
 
 <style scoped>
@@ -22,8 +22,9 @@ a.router-link-exact-active {
   color: #fff;
 }
 
-.content {
+.activity-view {
   margin-top: 40px;
   padding-left: 10px;
 }
+
 </style>
