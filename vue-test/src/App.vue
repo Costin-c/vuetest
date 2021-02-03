@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <div class="header">
-      <div class="logo">xxx学院</div>
+      <div class="logo" @click="handleClick">xxx学院</div>
       <div class="list">
-        <router-link to="/">首页</router-link>
-        <router-link to="/Learn">学习</router-link>
-        <router-link to="/Student">学员</router-link>
-        <router-link to="/About">关于</router-link>
-        <router-link to="/Activity">社区</router-link>
+        <router-link to="/home">首页</router-link>
+        <router-link to="/learn">学习</router-link>
+        <router-link to="/student">学员</router-link>
+        <router-link to="/about">关于</router-link>
+        <router-link to="/activity">社区</router-link>
       </div>
     </div>
     <div class="content">
@@ -21,6 +21,11 @@
 export default {
   name: 'app',
   components: {
+  },
+  methods: {
+    handleClick(){
+      this.$router.push('/home');
+    }
   },
 }
 </script>
@@ -44,7 +49,7 @@ export default {
     text-decoration: none;
     margin-left: 15px;
   }
-  .header .list a.linkactive.link{
+  .header .list a.router-link-active{
     color: #fff;
     font-weight: bold;
   }

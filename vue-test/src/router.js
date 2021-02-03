@@ -10,6 +10,10 @@ Vue.use(vueRouter);
 const routes = [
     {
       path: '/',
+      redirect: '/home'
+    },
+    {
+      path: '/home',
       component: Home
     },
     {
@@ -17,7 +21,7 @@ const routes = [
       component: () => import('./views/Learn')
     },
     {
-      path: '/Student',
+      path: '/student',
       component: () => import('./views/Student')
     },
     {
@@ -26,7 +30,35 @@ const routes = [
     },
     {
       path: '/activity',
-      component: () => import('./views/Activity')
+      component: () => import(/* webpackChunkName: 'AAA' */'./views/Activity'),
+      // 方法一
+      // redirect (to) {
+      //   return {
+      //     name: 'a',
+      //   }
+      // },
+      // 方法二
+      // redirect: '/activity/a',
+      // 方法三
+      redirect: {name: 'a'},
+      
+      children: [
+        {
+          path: 'a',
+          name: 'a',
+          component: () => import(/* webpackChunkName: 'AAA' */'./views/A')
+        },
+        {
+          path: 'b',
+          name: 'b',
+          component: () => import('./views/B')
+        },
+        {
+          path: 'c',
+          name: 'c',
+          component: () => import('./views/C')
+        },
+      ]
     },
   ];
 
@@ -35,6 +67,4 @@ const routes = [
 export default new vueRouter({
     mode: 'history',
     routes,
-    linkActiveClass: 'link',
-    linkExactActiveClass: 'linkactive'
   })
