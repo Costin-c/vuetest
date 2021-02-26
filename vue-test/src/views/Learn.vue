@@ -1,5 +1,5 @@
 <template>
-    <div class="learn">
-        学习
-    </div>
+  <div class="learn">
+    课程学习
+  </div>
 </template>
